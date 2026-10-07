@@ -1,7 +1,8 @@
-scikit-learn
-opencv-python<5  # cv2.HOGDescriptor was removed in OpenCV 5
-numpy
-matplotlib
-imutils
-joblib
-tqdm
+# Tested with Python 3.14 on Windows 11. The paper names these packages but no versions.
+scikit-learn==1.9.1
+opencv-python==4.14.0.94  # must stay < 5: cv2.HOGDescriptor was removed in OpenCV 5
+numpy==2.5.3
+matplotlib==3.11.2
+imutils==0.5.4
+joblib==1.6.0
+tqdm==4.70.1
