@@ -13,3 +13,6 @@ videos/
 
 # Cached feature matrices (rebuilt by train.py)
 cache/
+
+# Rendered demo videos
+results/*.mp4
