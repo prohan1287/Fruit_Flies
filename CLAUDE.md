@@ -5,7 +5,7 @@
 Reproduce **"Real-time Detailed Video Analysis of Fruit Flies"** (Steven Herbst, CS229 Fall 2018 Final Project, Stanford).
 
 - Course: UE24CS352A — Machine Learning
-- Team: Rohit Krishna R (PES1UG24CS385), Samrudh (PES1UG24CS417)
+- Team: Rohan Komperla (PES1UG24CS380), Dhanush Gowda AS (PES1UG24CS812)
 - Sources of truth: the paper (`paper.pdf`) and the poster (`poster.pdf`). The guidelines document (`guidelines.pdf`) governs deliverables.
 
 ## Ground rules
