@@ -1,5 +1,5 @@
 scikit-learn
-opencv-python
+opencv-python<5  # cv2.HOGDescriptor was removed in OpenCV 5
 numpy
 matplotlib
 imutils

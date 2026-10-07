@@ -6,3 +6,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Data placed at repo root
+images/
+videos/
+
+# Cached feature matrices (rebuilt by train.py)
+cache/

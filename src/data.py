@@ -1,11 +1,13 @@
 """LabelMe annotation loading and train/test split.
 
-Annotations live in input/images/<subfolder>/*.json (LabelMe format), each
+Annotations live in <data>/images/<subfolder>/*.json (LabelMe format), each
 pointing at its frame via `imagePath`. Every shape is a single labelled point:
   fh, fp, fa   female head, body point, abdomen
   mh, mp, ma   male head, body point, abdomen
-  mp2          second male body point (needed for wing labels)
+  mp2          second male body point (wing angles are measured from it)
   mw           male wing tips (zero or two per frame)
+
+<data> is input/ if it exists (author's layout), otherwise the repo root.
 """
 
 import json
@@ -14,8 +16,21 @@ from glob import glob
 
 from sklearn.model_selection import train_test_split
 
+from imgproc import in_contour
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-IMAGES_DIR = os.path.join(ROOT, 'input', 'images')
+DATA_DIR = os.path.join(ROOT, 'input') if os.path.isdir(os.path.join(ROOT, 'input')) else ROOT
+IMAGES_DIR = os.path.join(DATA_DIR, 'images')
+VIDEOS_DIR = os.path.join(DATA_DIR, 'videos')
+MODELS_DIR = os.path.join(ROOT, 'models')
+RESULTS_DIR = os.path.join(ROOT, 'results')
+CACHE_DIR = os.path.join(ROOT, 'cache')
+
+# Paper Sec. 6 says "one third", but every row of Table 1 has N_test = 25% of the examples,
+# which is also scikit-learn's default and what the author's code uses (NOTES.md D1).
+TEST_SIZE = 0.25
+# UNSPECIFIED: random seed. Not given in the sources (author's split is unseeded); team chose 0.
+SEED = 0
 
 
 class Annotation:
@@ -31,6 +46,10 @@ class Annotation:
             self.labels.setdefault(shape['label'], []).append(tuple(shape['points'][0]))
 
         self.problems = self._check()
+
+    @property
+    def name(self):
+        return os.path.relpath(self.json_path, IMAGES_DIR)
 
     def count(self, label):
         return len(self.labels.get(label, []))
@@ -59,31 +78,43 @@ class Annotation:
 
 
 def load_annotations(images_dir=IMAGES_DIR):
-    """Load every LabelMe JSON file in the subfolders of input/images, sorted by path."""
+    """Load every LabelMe JSON file in the subfolders of the images directory, sorted by path."""
     files = sorted(glob(os.path.join(images_dir, '*', '*.json')))
     if not files:
         raise FileNotFoundError('no LabelMe JSON files under {}'.format(images_dir))
     return [Annotation(f) for f in files]
 
 
-def split(items, test_size, seed):
-    """Hold out a test set that is never used in training.
+def contour_label(anno, contour):
+    """Ground truth for a contour: 'male', 'female', 'both' or 'neither', from the body points."""
+    has_m = in_contour(anno.get('mp')[0], contour)
+    has_f = in_contour(anno.get('fp')[0], contour)
+    if has_m and has_f:
+        return 'both'
+    if has_m:
+        return 'male'
+    if has_f:
+        return 'female'
+    return 'neither'
 
-    # UNSPECIFIED: test fraction. Paper Section 6 says "one third of the dataset",
-    # but every row of Table 1 has N_test/(N_train+N_test) = 25.0% (see NOTES.md).
-    # UNSPECIFIED: random seed. Not given in the sources.
-    # UNSPECIFIED: split granularity (whole frames vs. per-stage examples). See NOTES.md.
+
+def split(X, y):
+    """Hold out TEST_SIZE of a stage's examples as a test set never used in training.
+
+    As in the author's code, each stage splits its own examples, after augmentation (NOTES.md U3, U4).
     """
-    return train_test_split(items, test_size=test_size, random_state=seed)
+    return train_test_split(X, y, test_size=TEST_SIZE, random_state=SEED)
 
 
 def summarize(annotations):
     n = len(annotations)
     bad = [a for a in annotations if a.problems]
     print('Annotated frames: {}'.format(n))
+    for sub in sorted({os.path.dirname(a.name) for a in annotations}):
+        print('  {}: {}'.format(sub, sum(os.path.dirname(a.name) == sub for a in annotations)))
     print('Frames with labelling problems: {}'.format(len(bad)))
     for a in bad:
-        print('  {}: {}'.format(os.path.relpath(a.json_path, ROOT), '; '.join(a.problems)))
+        print('  {}: {}'.format(a.name, '; '.join(a.problems)))
     for label in ['fh', 'fp', 'fa', 'mh', 'mp', 'mp2', 'ma', 'mw']:
         print('  frames with {:>3}: {}'.format(label, sum(a.has(label) for a in annotations)))
     print('  frames with both wings: {}'.format(sum(a.count('mw') == 2 for a in annotations)))
