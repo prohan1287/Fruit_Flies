@@ -1,0 +1,8 @@
+# Data (~2 GB, downloaded separately; never committed)
+input/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
