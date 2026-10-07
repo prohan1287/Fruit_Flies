@@ -1,0 +1,1 @@
+video=test4.mp4 pearson(right, left)=0.680 pearson(right, -left)=-0.680 paper=-0.64
