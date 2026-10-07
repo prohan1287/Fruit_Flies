@@ -16,6 +16,19 @@ No neural networks and no GPU. Every value the paper does not give is marked `# 
 Those values come from the author's code. They are listed, along with the paper/poster discrepancies,
 in [NOTES.md](NOTES.md).
 
+**Team:** Rohan Komperla (PES1UG24CS380) · Dhanush Gowda AS (PES1UG24CS812)
+
+## Deliverables
+
+| Deliverable | Where |
+|---|---|
+| Source code | `src/` (see [Running](#running)) |
+| Two-page write-up | [docs/writeup.pdf](docs/writeup.pdf) |
+| Slide deck (14 slides) | [docs/slides.pdf](docs/slides.pdf) |
+| Live demo | `python src/demo.py -i test4.mp4` |
+| Results: tables and figures | [results/](results/) |
+| Decisions, gaps and discrepancies | [NOTES.md](NOTES.md) |
+
 ## Results
 
 ### Table 1: model accuracy (`results/table1.md`)
