@@ -16,3 +16,8 @@ cache/
 
 # Rendered demo videos
 results/*.mp4
+
+# Source papers and course guidelines (not ours to redistribute)
+37.pdf
+37-poster.pdf
+Guidelines and Instructions_Mini Project Assignment-1.pdf
