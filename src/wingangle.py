@@ -14,7 +14,7 @@ from sklearn.decomposition import PCA
 from sklearn.pipeline import make_pipeline
 from tqdm import tqdm
 
-from data import contour_label
+from data import SEED, contour_label
 from flycount import body_contours
 from imgproc import (ImagePatch, angle_diff, bound_point, crop_to_contour, find_contours, in_contour,
                      mask_from_contour, threshold_wings, well_mask)
@@ -137,7 +137,7 @@ class ClosedFormLinearRegression(BaseEstimator, RegressorMixin):
 
 
 def make_model():
-    return make_pipeline(PCA(n_components=N_COMPONENTS), ClosedFormLinearRegression())
+    return make_pipeline(PCA(n_components=N_COMPONENTS, random_state=SEED), ClosedFormLinearRegression())
 
 
 class WingPredictor:

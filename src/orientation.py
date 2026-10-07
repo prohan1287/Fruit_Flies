@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
 from tqdm import tqdm
 
-from data import contour_label
+from data import SEED, contour_label
 from flycount import body_contours
 from imgproc import angle_diff, crop_to_contour, well_mask
 
@@ -88,7 +88,7 @@ def build_dataset(annotations):
 
 def make_model():
     # UNSPECIFIED: logistic regression solver/regularization. Author code: lbfgs, C=1.0.
-    return make_pipeline(PCA(n_components=N_COMPONENTS), LogisticRegression(solver='lbfgs'))
+    return make_pipeline(PCA(n_components=N_COMPONENTS, random_state=SEED), LogisticRegression(solver='lbfgs'))
 
 
 class OrientationPredictor:
